@@ -1,23 +1,13 @@
-# Gene Thesaurus
-Translates from older gene names to the current HGNC standard gene symbols.
+# GeneThesaurus
 
-# Supported lookup fields:
-- 'ensembl_gene_id': string
-- 'refseq_accession': list
-- 'symbol': string
-- 'ccds_id': list
-- 'omim_id': list
-- 'location': string. Format: '8q24.23'
-- 'rgd_id': list
-- 'merops': string
-- 'entrez_id': string
-- 'uniprot_ids': list
-- 'mgd_id': list
-- 'hgnc_id': string
-- 'ucsc_id': string
-- 'prev_symbol': list
-- 'rna_central_id': list
-- 'alias_symbol': list
+GeneThesaurus is a Python package that translates gene aliases and old gene symbols to the current HGNC standard gene symbols. 
 
-# TODO
-- pip freeze
+# Example Usage
+```
+import gene_thesaurus
+
+genes = gene_thesaurus.lookup(['TNFSF2', 'ERBB1', 'VPF', 'ZSCAN5CP'], data_dir='/tmp')
+
+print(genes)
+# ['TNF', 'EGFR', 'VEGFA', 'ZSCAN5C']
+```

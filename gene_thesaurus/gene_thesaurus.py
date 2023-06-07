@@ -24,7 +24,7 @@ def download_json(date):
 	return path
 
 def get_json(date):
-	json_path = download_json('2023-04-01')
+	json_path = download_json('2023-04-01', encoding='utf8')
 	
 	with open(json_path,'r') as f:
 		data = json.loads(f.read())
@@ -35,14 +35,15 @@ def get_df(date):
 	json = get_json(date)
 	return pd.json_normalize(json)
 
+
 def lookup_by_prev_symbol(gene_name):
 	df = get_df('2023-04-01')
-	print(df.columns)
+	#print(df.columns)
+	#print(df['gtrnadb'])
 	filtered_df = df[df['prev_symbol'].apply(lambda x: isinstance(x, list) and gene_name in x)]
-	return filtered_df['symbol']
+	return filtered_df[['gencc', 'hgnc_id', 'refseq_accession', 'symbol', 'ccds_id', 'omim_id', 'rgd_id', 'merops']]
 
 def lookup(gene_name):
 	return lookup_by_prev_symbol(gene_name)
 
 print(lookup('ZSCAN5CP'))
-
