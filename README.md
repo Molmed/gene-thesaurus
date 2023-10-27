@@ -2,6 +2,13 @@
 
 GeneThesaurus is a Python package that translates gene aliases and old gene symbols to the current HGNC standard gene symbols. 
 
+# Installation
+
+You can install GeneThesaurus with:
+```
+pip install gene-thesaurus
+```
+
 # Example Usage
 ```
 import gene_thesaurus
