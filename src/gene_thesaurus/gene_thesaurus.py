@@ -32,7 +32,7 @@ def get_json_data(data_dir):
     return data['response']['docs']
 
 
-def lookup(gene_list, data_dir='/tmp'):
+def translate_genes(gene_list, data_dir='/tmp'):
     json = get_json_data(data_dir)
 
     results = []
