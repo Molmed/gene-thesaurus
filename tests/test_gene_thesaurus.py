@@ -1,4 +1,4 @@
-from gene_thesaurus import gene_thesaurus
+import gene_thesaurus
 import tempfile
 import os
 
