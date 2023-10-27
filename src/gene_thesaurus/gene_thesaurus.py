@@ -37,12 +37,14 @@ def lookup(gene_list, data_dir='/tmp'):
 
     results = []
     for gene in gene_list:
+        found = None
         for item in json:
             # Currently looks in two different fields: 'prev_symbol' and 'alias_symbol'
             prev_symbol = item.get("prev_symbol", "")
             alias_symbol = item.get("alias_symbol", "")
 
             if gene.upper() in prev_symbol or gene.upper() in alias_symbol:
-                results.append(item.get("symbol"))
+                found = item.get("symbol")
+        results.append(found)
 
     return results
