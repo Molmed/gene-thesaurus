@@ -67,7 +67,7 @@ def get_gene_thesaurus_dict(data_dir):
 
     return gene_dict
 
-def translate_genes(gene_list, data_dir='/tmp'):
+def translate_genes(gene_list, data_dir='/tmp', nullify_missing=False):
     gene_thesaurus_dict = get_gene_thesaurus_dict(data_dir)
 
     results = []
@@ -76,7 +76,10 @@ def translate_genes(gene_list, data_dir='/tmp'):
             symbol = gene_thesaurus_dict[gene]
         except:
             print("Could not find {}".format(gene))
-            symbol = None
+            if nullify_missing:
+                symbol = None
+            else:
+                symbol = gene
         results.append(symbol)
 
     return results
