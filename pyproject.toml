@@ -30,8 +30,8 @@ Homepage = "https://github.com/Molmed/gene-thesaurus"
 
 
 [tool.bumpver]
-current_version = "1.0.0"
-version_pattern = "MAJOR.MINOR.PATCH"
+current_version = "v1.0.1"
+version_pattern = "vMAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 tag_message = "{new_version}"
 tag_scope = "default"
