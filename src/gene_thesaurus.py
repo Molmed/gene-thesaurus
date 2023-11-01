@@ -1,12 +1,12 @@
-from pathlib import Path
 from datetime import datetime, timedelta
 import os.path
 import requests
 import json
 
-HGNC_BASE_URL = 'https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/archive/monthly/json/'
+HGNC_BASE_URL = 'https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/archive/monthly/json/'  # noqa: E501
 HGNC_BASE_FILENAME = 'hgnc_complete_set_{month}-01.json'
-GENE_THESAURUS_BASE_FILENAME='gene_thesaurus_{month}-01.json'
+GENE_THESAURUS_BASE_FILENAME = 'gene_thesaurus_{month}-01.json'
+
 
 def get_month():
     # Sometimes on the first of the month, data sets are not published yet.
@@ -17,6 +17,7 @@ def get_month():
         last_month = current_date - timedelta(days=current_date.day)
         return last_month.strftime('%Y-%m')
     return datetime.today().strftime('%Y-%m')
+
 
 def get_hgnc_json_path(data_dir):
     filename = HGNC_BASE_FILENAME.format(month=get_month())
@@ -32,13 +33,15 @@ def get_hgnc_json_path(data_dir):
 
     return path
 
+
 def get_hgnc_json_data(data_dir):
     json_path = get_hgnc_json_path(data_dir)
-    
-    with open(json_path,'r', encoding='utf8') as f:
+
+    with open(json_path, 'r', encoding='utf8') as f:
         data = json.loads(f.read())
 
     return data['response']['docs']
+
 
 def get_gene_thesaurus_dict(data_dir):
     filename = GENE_THESAURUS_BASE_FILENAME.format(month=get_month())
@@ -46,14 +49,15 @@ def get_gene_thesaurus_dict(data_dir):
 
     # If dict already exists, return it
     if os.path.isfile(json_path):
-        with open(json_path,'r', encoding='utf8') as f:
+        with open(json_path, 'r', encoding='utf8') as f:
             data = json.loads(f.read())
             return data
-        
+
     # Otherwise, construct it from the hgnc data and then return it
     hgnc_json = get_hgnc_json_data(data_dir)
 
-    # Convert to simple dict, where each 'symbol', 'prev_symbol' and 'alias_symbol' all map to 'symbol'
+    # Convert to simple dict, where each 'symbol', 'prev_symbol'
+    # # and 'alias_symbol' all map to 'symbol'
     gene_dict = {}
     for item in hgnc_json:
         # The current gene name
@@ -74,6 +78,7 @@ def get_gene_thesaurus_dict(data_dir):
 
     return gene_dict
 
+
 def translate_genes(gene_list, data_dir='/tmp', nullify_missing=False):
     gene_thesaurus_dict = get_gene_thesaurus_dict(data_dir)
 
@@ -81,7 +86,7 @@ def translate_genes(gene_list, data_dir='/tmp', nullify_missing=False):
     for gene in gene_list:
         try:
             symbol = gene_thesaurus_dict[gene]
-        except:
+        except KeyError:
             print("Could not find {}".format(gene))
             if nullify_missing:
                 symbol = None
