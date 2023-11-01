@@ -1,5 +1,5 @@
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 import os.path
 import requests
 import json
@@ -9,6 +9,13 @@ HGNC_BASE_FILENAME = 'hgnc_complete_set_{month}-01.json'
 GENE_THESAURUS_BASE_FILENAME='gene_thesaurus_{month}-01.json'
 
 def get_month():
+    # Sometimes on the first of the month, data sets are not published yet.
+    # If today is the first, use last month's data.
+    day_of_month = datetime.today().day
+    if day_of_month == 1:
+        current_date = datetime.now()
+        last_month = current_date - timedelta(days=current_date.day)
+        return last_month.strftime('%Y-%m')
     return datetime.today().strftime('%Y-%m')
 
 def get_hgnc_json_path(data_dir):
