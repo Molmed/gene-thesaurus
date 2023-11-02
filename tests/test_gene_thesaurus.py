@@ -48,3 +48,11 @@ def test_translate_invalid_genes_nullify_missing():
     test_genes = ['TNFSF2', 'ERBB1', 'NOTAREALGENE', 'ZSCAN5CP']
     symbols = gt.translate_genes(test_genes, nullify_missing=True)
     assert symbols == ['TNF', 'EGFR', None, 'ZSCAN5C']
+
+
+def test_updated_genes():
+    up_to_date_gene = 'ETV6'
+    test_genes = ['TNFSF2', 'ERBB1', 'NOTAREALGENE',
+                  'ZSCAN5CP', up_to_date_gene]
+    gt_dict = gt.updated_genes(test_genes)
+    assert gt_dict == {'TNFSF2': 'TNF', 'ERBB1': 'EGFR', 'ZSCAN5CP': 'ZSCAN5C'}

@@ -117,3 +117,7 @@ class GeneThesaurus:
             results.append(symbol)
 
         return results
+
+    def updated_genes(self, gene_list):
+        return {key: self.gene_dict[key] for key in gene_list
+                if key in self.gene_dict and key != self.gene_dict[key]}
