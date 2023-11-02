@@ -1,4 +1,4 @@
-# GeneThesaurus v1.0.2
+# GeneThesaurus v1.1.0
 
 GeneThesaurus is a Python package that translates gene aliases and old gene symbols to the current HGNC standard gene symbols. 
 
