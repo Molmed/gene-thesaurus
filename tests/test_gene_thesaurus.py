@@ -1,38 +1,50 @@
-import gene_thesaurus
+from gene_thesaurus import GeneThesaurus, HgncException
+import pytest
 import tempfile
+from datetime import datetime
 from freezegun import freeze_time
+
 
 data_dir = tempfile.TemporaryDirectory()
 data_dir_name = data_dir.name
+gt = GeneThesaurus(data_dir=data_dir_name)
 
 
-@freeze_time("2023-11-15 12:00:00")
-def test_get_month_random_day():
-    assert gene_thesaurus.get_month() == "2023-11"
+@freeze_time("2023-02-05 12:00:00")
+def test_get_last_n_months():
+    data_end_time = datetime.now()
+
+    months = GeneThesaurus._get_last_n_months(data_end_time, 6)
+    expected_months = ["2023-02", "2023-01", "2022-12",
+                       "2022-11", "2022-10", "2022-09"]
+    assert months == expected_months
+
+    months = GeneThesaurus._get_last_n_months(data_end_time, 1)
+    expected_months = ["2023-02"]
+    assert months == expected_months
 
 
-@freeze_time("2023-11-01 12:00:00")
-def test_get_month_first_day():
-    assert gene_thesaurus.get_month() == "2023-10"
+@freeze_time("2081-04-05 12:00:00")
+def test_hgnc_exception():
+    with pytest.raises(HgncException):
+        GeneThesaurus(data_dir=data_dir_name,
+                      data_end_date=datetime.now(),
+                      n_attempted_months=2)
 
 
 def test_translate_genes():
     test_genes = ['TNFSF2', 'ERBB1', 'VPF', 'ZSCAN5CP']
-    symbols = gene_thesaurus.translate_genes(test_genes,
-                                             data_dir=data_dir_name)
+    symbols = gt.translate_genes(test_genes)
     assert symbols == ['TNF', 'EGFR', 'VEGFA', 'ZSCAN5C']
 
 
 def test_translate_invalid_genes():
     test_genes = ['TNFSF2', 'ERBB1', 'NOTAREALGENE', 'ZSCAN5CP']
-    symbols = gene_thesaurus.translate_genes(test_genes,
-                                             data_dir=data_dir_name)
+    symbols = gt.translate_genes(test_genes)
     assert symbols == ['TNF', 'EGFR', 'NOTAREALGENE', 'ZSCAN5C']
 
 
 def test_translate_invalid_genes_nullify_missing():
     test_genes = ['TNFSF2', 'ERBB1', 'NOTAREALGENE', 'ZSCAN5CP']
-    symbols = gene_thesaurus.translate_genes(test_genes,
-                                             data_dir=data_dir_name,
-                                             nullify_missing=True)
+    symbols = gt.translate_genes(test_genes, nullify_missing=True)
     assert symbols == ['TNF', 'EGFR', None, 'ZSCAN5C']
