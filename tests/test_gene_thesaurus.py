@@ -32,27 +32,19 @@ def test_hgnc_exception():
                       n_attempted_months=2)
 
 
-def test_translate_genes():
-    test_genes = ['TNFSF2', 'ERBB1', 'VPF', 'ZSCAN5CP']
-    symbols = gt.translate_genes(test_genes)
-    assert symbols == ['TNF', 'EGFR', 'VEGFA', 'ZSCAN5C']
-
-
-def test_translate_invalid_genes():
-    test_genes = ['TNFSF2', 'ERBB1', 'NOTAREALGENE', 'ZSCAN5CP']
-    symbols = gt.translate_genes(test_genes)
-    assert symbols == ['TNF', 'EGFR', 'NOTAREALGENE', 'ZSCAN5C']
-
-
-def test_translate_invalid_genes_nullify_missing():
-    test_genes = ['TNFSF2', 'ERBB1', 'NOTAREALGENE', 'ZSCAN5CP']
-    symbols = gt.translate_genes(test_genes, nullify_missing=True)
-    assert symbols == ['TNF', 'EGFR', None, 'ZSCAN5C']
-
-
-def test_updated_genes():
+def test_update_gene_symbols():
     up_to_date_gene = 'ETV6'
     test_genes = ['TNFSF2', 'ERBB1', 'NOTAREALGENE',
                   'ZSCAN5CP', up_to_date_gene]
-    gt_dict = gt.updated_genes(test_genes)
+    gt_dict = gt.update_gene_symbols(test_genes)
     assert gt_dict == {'TNFSF2': 'TNF', 'ERBB1': 'EGFR', 'ZSCAN5CP': 'ZSCAN5C'}
+
+
+def test_translate_genes():
+    test_genes = ['TNFSF2', 'ERBB1', 'NOTAREALGENE',
+                  'ZSCAN5CP', 'ETV6']
+    gt_dict = gt.translate_genes(test_genes)
+    assert gt_dict == {'TNFSF2': 'ENSG00000232810',
+                       'ERBB1': 'ENSG00000146648',
+                       'ZSCAN5CP': 'ENSG00000204532',
+                       'ETV6': 'ENSG00000139083'}
