@@ -37,6 +37,8 @@ print(updated_genes)
 ### translate_genes() ###
 #########################
 
+# Valid values for source and target are 'symbol' and 'ensembl_id'.
+
 translated_genes = gt.translate_genes(input, source='symbol', target='ensembl_id')
 print(translated_genes)
 {'TNFSF2': 'ENSG00000232810', 'ETV6': 'ENSG00000139083'}

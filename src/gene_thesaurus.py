@@ -16,6 +16,7 @@ class GeneThesaurus:
     _HGNC_BASE_FILENAME = 'hgnc_complete_set_{month}-01.json'
     _SYMBOL_THESAURUS_BASE_FILENAME = 'symbol_thesaurus_{month}-01.json'
     _SYMBOL_TO_ENSEMBL_DICT_BASE_FILENAME = 'symbol_to_ensembl_{month}-01.json'
+    _ENSEMBL_TO_SYMBOL_DICT_BASE_FILENAME = 'ensembl_to_symbol_{month}-01.json'
 
     def __init__(self,
                  data_dir='/tmp',
@@ -117,6 +118,45 @@ class GeneThesaurus:
                 if key in self.__symbol_thesaurus and
                 key != self.__symbol_thesaurus[key]}
 
+    def _translate_ensembl_ids_to_symbols(self, gene_list):
+        """
+        Translates a list of Ensembl IDs to gene symbols.
+
+        Args:
+            gene_list (list): A list of Ensembl IDs to be translated.
+
+        Returns:
+            dict: A dictionary mapping each Ensembl ID to its gene symbol.
+        """
+        self.__ensembl_to_symbol_dict = None
+
+        # Prepare the dinctionary, where each 'ensembl_id' maps to 'symbol'
+        dict_filename = self._ENSEMBL_TO_SYMBOL_DICT_BASE_FILENAME.format(
+            month=self.__hgnc_data_month)
+        dict_json_path = self.__data_dir + "/" + dict_filename
+
+        # Does it already exist?
+        if os.path.isfile(dict_json_path):
+            with open(dict_json_path, 'r', encoding='utf8') as f:
+                self.__ensembl_to_symbol_dict = json.loads(f.read())
+        else:
+            self.__ensembl_to_symbol_dict = {}
+            for item in self.__hgnc_data:
+                # The ensembl id
+                ensembl_id = item.get("ensembl_gene_id")
+
+                # The current gene name
+                symbol = item.get("symbol")
+                self.__ensembl_to_symbol_dict[ensembl_id] = symbol
+
+            # Save the dict
+            with open(dict_json_path, 'w') as file:
+                json.dump(self.__ensembl_to_symbol_dict, file)
+
+        return {key: self.__ensembl_to_symbol_dict[key] for key in gene_list
+                if key in self.__ensembl_to_symbol_dict and
+                key != self.__ensembl_to_symbol_dict[key]}
+
     def _translate_symbols_to_ensembl_ids(self, gene_list):
         """
         Translates a list of gene symbols to Ensembl IDs.
@@ -168,6 +208,7 @@ class GeneThesaurus:
     def translate_genes(self, gene_list, source='symbol', target='ensembl_id'):
         """
         Translates a list of genes from the source to the target format.
+        Valid values for source and target are 'symbol' and 'ensembl_id'.
 
         Args:
             gene_list (list): A list of gene names to be translated.
@@ -178,4 +219,12 @@ class GeneThesaurus:
         Returns:
             dict: A dictionary mapping each source gene to its target format.
         """
-        return self._translate_symbols_to_ensembl_ids(gene_list)
+
+        if source == 'symbol' and target == 'ensembl_id':
+            return self._translate_symbols_to_ensembl_ids(gene_list)
+        elif source == 'ensembl_id' and target == 'symbol':
+            return self._translate_ensembl_ids_to_symbols(gene_list)
+        else:
+            err_msg = """Error: valid values for source and target are
+            'symbol' and 'ensembl_id'."""
+            raise ValueError(err_msg)
