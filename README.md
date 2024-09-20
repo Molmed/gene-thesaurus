@@ -5,6 +5,7 @@ GeneThesaurus is a Python package that translates between different gene standar
 Presently, GeneThesaurus supports translating:
 - gene aliases and old gene symbols to the current HGNC standard gene symbols
 - gene symbols to ensembl identifiers
+- ensembl identifiers to gene symbols
 
 Please get in touch (or consider submitting a pull request to this project) if you need translation between other formats.
 
