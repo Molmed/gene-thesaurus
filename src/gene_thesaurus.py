@@ -12,7 +12,7 @@ class HgncException(Exception):
 
 
 class GeneThesaurus:
-    _HGNC_BASE_URL = 'https://ftp.ebi.ac.uk/pub/databases/genenames/hgnc/archive/monthly/json/'  # noqa: E501
+    _HGNC_BASE_URL = 'https://storage.googleapis.com/public-download-files/hgnc/archive/archive/monthly/json/'  # noqa: E501
     _HGNC_BASE_FILENAME = 'hgnc_complete_set_{month}-01.json'
     _SYMBOL_THESAURUS_BASE_FILENAME = 'symbol_thesaurus_{month}-01.json'
     _SYMBOL_TO_ENSEMBL_DICT_BASE_FILENAME = 'symbol_to_ensembl_{month}-01.json'
