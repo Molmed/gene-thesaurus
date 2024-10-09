@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gene-thesaurus"
-version = "v2.2.0"
+version = "v2.3.0"
 description = "GeneThesaurus is a Python package that translates gene aliases and old gene symbols to the current HGNC standard gene symbols."
 readme = "README.md"
 authors = [{ name = "Mariya Lysenkova Wiklander", email = "mariya.lysenkova@medsci.uu.se" }]
@@ -30,7 +30,7 @@ Homepage = "https://github.com/Molmed/gene-thesaurus"
 
 
 [tool.bumpver]
-current_version = "v2.2.0"
+current_version = "v2.3.0"
 version_pattern = "vMAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 tag_message = "{new_version}"
