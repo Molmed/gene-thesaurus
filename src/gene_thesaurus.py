@@ -1,11 +1,10 @@
 import logging
 from src.translation_provider import TranslationProvider
 from src.hgnc_translation_provider import HgncTranslationProvider
+from src.ncbi_translation_provider import NcbiTranslationProvider
 
 
 class GeneThesaurus:
-    _NCBI_URL = 'https://ftp.ncbi.nlm.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz'  # noqa: E501
-
     def __init__(self,
                  data_dir='/tmp'):
         self.__data_dir = data_dir
@@ -71,4 +70,6 @@ class GeneThesaurus:
             hgnc = HgncTranslationProvider(self.__data_dir)
             return hgnc.translate_list(gene_list, source, target)
 
-        # TODO: add entrez_id translation
+        elif source == 'entrez_id':
+            ncbi = NcbiTranslationProvider(self.__data_dir)
+            return ncbi.translate_list(gene_list, source, target)
