@@ -39,6 +39,7 @@ def test_translate_genes_from_ensembl_id():
                        'ENSG00000204532': 'ZSCAN5C',
                        'ENSG00000139083': 'ETV6'}
 
+
 def test_invalid_gene_translation():
     test_genes = ['ENSG00000232810',
                   'ENSG00000146648',
@@ -52,3 +53,18 @@ def test_invalid_gene_translation():
     with pytest.raises(ValueError):
         gt.translate_genes(test_genes, source='not_a_valid_source',
                            target='symbol')
+
+
+def test_entrez_translation():
+    test_genes = ['102465909', '100132287', '81399']
+    gt_dict = gt.translate_genes(test_genes, source='entrez_id',
+                                 target='symbol')
+    assert gt_dict == {102465909: 'MIR6859-2',
+                       100132287: 'LOC100132287',
+                       81399: 'OR4F16'}
+
+    gt_dict = gt.translate_genes(test_genes, source='entrez_id',
+                                 target='ensembl_id')
+    assert gt_dict == {102465909: 'ENSG00000273874',
+                       100132287: '',
+                       81399: 'ENSG00000284662'}

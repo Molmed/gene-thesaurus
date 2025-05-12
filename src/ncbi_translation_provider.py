@@ -1,7 +1,6 @@
 import requests
 import os
 import pandas as pd
-from typing import Literal
 import logging
 from src.translation_provider import TranslationProvider
 
@@ -41,16 +40,42 @@ class NcbiTranslationProvider(TranslationProvider):
                                        sep='\t',
                                        compression='gzip')
 
+    def _subset_ncbi_data(self, gene_list: list) -> list:
+        # Get all rows where GeneId is in the gene_list
+        entrez_df = self.__ncbi_data[self.__ncbi_data['GeneID'].isin(gene_list)]
+
+        # Sort entrez_df so that the GeneIds are in the same order as gene_list
+        entrez_df = entrez_df.set_index('GeneID')
+        entrez_df = entrez_df.reindex(gene_list)
+
+        return entrez_df
+
+    def _translate_list_to_symbol(self, gene_list: list) -> dict:
+        entrez_df = self._subset_ncbi_data(gene_list)
+        entrez_dict = entrez_df['Symbol'].fillna('').to_dict()
+        return entrez_dict
+
+    def _translate_list_to_ensembl_id(self, gene_list: list) -> dict:
+        entrez_df = self._subset_ncbi_data(gene_list)
+        entrez_df['ensembl_id'] = entrez_df['dbXrefs'].str.extract(
+            r'Ensembl:(ENSG\d{11})')
+        entrez_dict = entrez_df['ensembl_id'].fillna('').to_dict()
+        # Sort the dictionary so that the keys are in the same order as gene_list
+        return entrez_dict
+
     def translate_list(self,
                        gene_list: list,
                        source: TranslationProvider._IDENTIFIER_TYPES,
                        target: TranslationProvider._IDENTIFIER_TYPES) -> dict:
+        # Cast list of ids to list of ints
+        gene_list = [int(gene) for gene in gene_list]
+
         valid = True
         if source == 'entrez_id':
             if target == 'symbol':
-                return {}
+                return self._translate_list_to_symbol(gene_list)
             elif target == 'ensembl_id':
-                return {}
+                return self._translate_list_to_ensembl_id(gene_list)
             else:
                 valid = False
         else:
@@ -60,3 +85,4 @@ class NcbiTranslationProvider(TranslationProvider):
             err_msg = """Error: valid values for source and target are
             'symbol' and 'ensembl_id'."""
             raise ValueError(err_msg)
+
