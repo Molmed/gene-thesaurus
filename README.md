@@ -1,11 +1,12 @@
 # GeneThesaurus v2.3.0
 
-GeneThesaurus is a Python package that translates between different gene standards using publicly available data from [HGNC](https://www.genenames.org/).
+GeneThesaurus is a Python package that translates between different gene standards using publicly available data from [HGNC](https://www.genenames.org/) and NIH.
 
 Presently, GeneThesaurus supports translating:
 - gene aliases and old gene symbols to the current HGNC standard gene symbols
 - gene symbols to ensembl identifiers
 - ensembl identifiers to gene symbols
+- entrez (NCBI) identifiers to gene symbols or ensembl identifiers
 
 Please get in touch (or consider submitting a pull request to this project) if you need translation between other formats.
 
@@ -38,7 +39,7 @@ print(updated_genes)
 ### translate_genes() ###
 #########################
 
-# Valid values for source and target are 'symbol' and 'ensembl_id'.
+# Valid values for source and target are 'symbol', 'ensembl_id' and 'entrez_id'.
 
 translated_genes = gt.translate_genes(input, source='symbol', target='ensembl_id')
 print(translated_genes)
