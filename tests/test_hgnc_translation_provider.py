@@ -1,4 +1,4 @@
-from hgnc_translation_provider import HgncException, HgncTranslationProvider
+from gene_thesaurus.hgnc_translation_provider import HgncException, HgncTranslationProvider
 import pytest
 import tempfile
 from datetime import datetime

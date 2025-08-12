@@ -55,3 +55,7 @@ push = true
 pythonpath = [
   "src"
 ]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["gene_thesaurus"]

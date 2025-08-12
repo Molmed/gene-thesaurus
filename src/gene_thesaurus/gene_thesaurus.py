@@ -1,7 +1,7 @@
 import logging
-from src.translation_provider import TranslationProvider
-from src.hgnc_translation_provider import HgncTranslationProvider
-from src.ncbi_translation_provider import NcbiTranslationProvider
+from gene_thesaurus.translation_provider import TranslationProvider
+from gene_thesaurus.hgnc_translation_provider import HgncTranslationProvider
+from gene_thesaurus.ncbi_translation_provider import NcbiTranslationProvider
 
 
 class GeneThesaurus:

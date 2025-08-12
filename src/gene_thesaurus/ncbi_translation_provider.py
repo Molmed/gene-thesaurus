@@ -2,7 +2,7 @@ import requests
 import os
 import pandas as pd
 import logging
-from src.translation_provider import TranslationProvider
+from gene_thesaurus.translation_provider import TranslationProvider
 
 
 class NcbiTranslationProvider(TranslationProvider):

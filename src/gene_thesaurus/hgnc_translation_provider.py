@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timedelta
 from typing import Literal
 import logging
-from src.translation_provider import TranslationProvider
+from gene_thesaurus.translation_provider import TranslationProvider
 
 
 class HgncException(Exception):
