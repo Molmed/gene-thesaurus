@@ -18,10 +18,10 @@ class HgncTranslationProvider(TranslationProvider):
     HGNC Translation Provider for translating gene symbols to Ensembl IDs.
     """
     _HGNC_BASE_URL = 'https://storage.googleapis.com/public-download-files/hgnc/archive/archive/monthly/json/'  # noqa: E501
-    _HGNC_BASE_FILENAME = 'hgnc_complete_set_{month}-01.json'
-    _SYMBOL_THESAURUS_BASE_FILENAME = 'symbol_thesaurus_{month}-01.json'
-    _SYMBOL_TO_ENSEMBL_DICT_BASE_FILENAME = 'symbol_to_ensembl_{month}-01.json'
-    _ENSEMBL_TO_SYMBOL_DICT_BASE_FILENAME = 'ensembl_to_symbol_{month}-01.json'
+    _HGNC_BASE_FILENAME = 'hgnc_complete_set_{date}.json'
+    _SYMBOL_THESAURUS_BASE_FILENAME = 'symbol_thesaurus_{date}.json'
+    _SYMBOL_TO_ENSEMBL_DICT_BASE_FILENAME = 'symbol_to_ensembl_{date}.json'
+    _ENSEMBL_TO_SYMBOL_DICT_BASE_FILENAME = 'ensembl_to_symbol_{date}.json'
     _IDENTIFIER_TYPES = Literal[
         'symbol',
         'ensembl_id'
@@ -30,11 +30,13 @@ class HgncTranslationProvider(TranslationProvider):
     def __init__(self,
                  data_dir='/tmp',
                  data_end_date=datetime.now(),
-                 n_attempted_months=6):
+                 n_attempted_months=6,
+                 n_attempted_days=31):
         self.__data_dir = data_dir
         self.__hgnc_data_end_date = data_end_date
         self.__hgnc_n_attempted_months = n_attempted_months
-        self.__hgnc_data_month = None
+        self.__hgnc_n_attempted_days = n_attempted_days
+        self.__hgnc_data_date = None
         self.__hgnc_json_path = None
         self.__hgnc_data = None
 
@@ -43,34 +45,42 @@ class HgncTranslationProvider(TranslationProvider):
         self._get_hgnc_data()
 
     def _get_hgnc_data(self):
-        # Try getting HGNC data for the past n months
+        # Try getting HGNC data for the past n months and days
         months = self._get_last_n_months(self.__hgnc_data_end_date,
                                          self.__hgnc_n_attempted_months)
 
         for month in months:
-            filename = self._HGNC_BASE_FILENAME.format(month=month)
-            path = self.__data_dir + "/" + filename
-            found = False
+            for day in range(1, self.__hgnc_n_attempted_days + 1):
+                date_str = f"{month}-{day:02d}"
+                filename = self._HGNC_BASE_FILENAME.format(date=date_str)
+                path = self.__data_dir + "/" + filename
+                found = False
 
-            if os.path.isfile(path):
-                found = True
-            else:
-                url = self._HGNC_BASE_URL + filename
-                self.logger.debug(f"Trying HGNC url: {url}")
-                # 1 sec to connect, 10 sec to read
-                r = requests.get(url, timeout=(1, 10))
-                if r.status_code == 200:
+                if os.path.isfile(path):
                     found = True
-                    with open(path, 'wb') as f:
-                        f.write(r.content)
+                else:
+                    url = self._HGNC_BASE_URL + filename
+                    self.logger.debug(f"Trying HGNC url: {url}")
+                    # 1 sec to connect, 10 sec to read
+                    try:
+                        r = requests.get(url, timeout=(1, 10))
+                        if r.status_code == 200:
+                            found = True
+                            with open(path, 'wb') as f:
+                                f.write(r.content)
+                    except requests.RequestException:
+                        continue
 
-            if found:
-                self.__hgnc_data_month = month
-                self.__hgnc_json_path = path
+                if found:
+                    self.__hgnc_data_date = date_str
+                    self.__hgnc_json_path = path
+                    break
+
+            if self.__hgnc_data_date:
                 break
 
         # If we have maxed out number of attempts, throw exception
-        if not self.__hgnc_data_month or not self.__hgnc_json_path:
+        if not self.__hgnc_data_date or not self.__hgnc_json_path:
             raise HgncException(
                 f"Could not retrieve HGNC data from {self._HGNC_BASE_URL}")
 
@@ -99,7 +109,7 @@ class HgncTranslationProvider(TranslationProvider):
         # Prepare the thesaurus, where each 'symbol', 'prev_symbol'
         # and 'alias_symbol' all map to 'symbol'
         dict_filename = self._SYMBOL_THESAURUS_BASE_FILENAME.format(
-            month=self.__hgnc_data_month)
+            date=self.__hgnc_data_date)
         dict_json_path = self.__data_dir + "/" + dict_filename
 
         # Does it already exist?
@@ -141,9 +151,9 @@ class HgncTranslationProvider(TranslationProvider):
         """
         self.__ensembl_to_symbol_dict = None
 
-        # Prepare the dinctionary, where each 'ensembl_id' maps to 'symbol'
+        # Prepare the dictionary, where each 'ensembl_id' maps to 'symbol'
         dict_filename = self._ENSEMBL_TO_SYMBOL_DICT_BASE_FILENAME.format(
-            month=self.__hgnc_data_month)
+            date=self.__hgnc_data_date)
         dict_json_path = self.__data_dir + "/" + dict_filename
 
         # Does it already exist?
@@ -180,10 +190,10 @@ class HgncTranslationProvider(TranslationProvider):
         """
         self.__symbol_to_ensembl_dict = None
 
-        # Prepare the dinctionary, where each 'symbol', 'prev_symbol'
+        # Prepare the dictionary, where each 'symbol', 'prev_symbol'
         # and 'alias_symbol' all map to 'ensembl_id'
         dict_filename = self._SYMBOL_TO_ENSEMBL_DICT_BASE_FILENAME.format(
-            month=self.__hgnc_data_month)
+            date=self.__hgnc_data_date)
         dict_json_path = self.__data_dir + "/" + dict_filename
 
         # Does it already exist?
