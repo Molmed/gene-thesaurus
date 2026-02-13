@@ -1,4 +1,4 @@
-# GeneThesaurus v3.1.0
+# GeneThesaurus v3.2.0
 
 GeneThesaurus is a Python package that translates between different gene standards using publicly available data from [HGNC](https://www.genenames.org/) and NIH.
 
